@@ -1,8 +1,9 @@
 package rpc_test
 
 import (
-	"cscope_lsp/rpc"
 	"testing"
+
+	"github.com/dhananjaylatkar/cscope_lsp/rpc"
 )
 
 type EncodingExample struct {
@@ -33,4 +34,3 @@ func TestDecode(t *testing.T) {
 		t.Fatalf("Expected: 'hi', Got: %s", method)
 	}
 }
-

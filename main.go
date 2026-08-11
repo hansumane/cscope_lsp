@@ -2,18 +2,19 @@ package main
 
 import (
 	"bufio"
-	"github.com/dhananjaylatkar/cscope_lsp/lsp"
-	"github.com/dhananjaylatkar/cscope_lsp/rpc"
-	"github.com/dhananjaylatkar/cscope_lsp/state"
 	"encoding/json"
 	"io"
 	"log"
 	"os"
+
+	"github.com/dhananjaylatkar/cscope_lsp/lsp"
+	"github.com/dhananjaylatkar/cscope_lsp/rpc"
+	"github.com/dhananjaylatkar/cscope_lsp/state"
 )
 
 const (
 	initBufSize = 64 * 1024
-	maxBufSize = 10 * 1024 * 1024
+	maxBufSize  = 10 * 1024 * 1024
 )
 
 func main() {
@@ -59,6 +60,7 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, met
 		writeResponse(writer, msg)
 
 		logger.Print("Sent the reply")
+
 	case "shutdown":
 		var request lsp.ShutdownRequest
 		if err := json.Unmarshal(contents, &request); err != nil {
@@ -70,6 +72,7 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, met
 		writeResponse(writer, msg)
 
 		logger.Print("Shutdown")
+
 	case "textDocument/didOpen":
 		var request lsp.DidOpenTextDocumentNotification
 		if err := json.Unmarshal(contents, &request); err != nil {
@@ -79,6 +82,7 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, met
 
 		logger.Printf("Opened: %s", request.Params.TextDocument.URI)
 		state.Update(request.Params.TextDocument.URI, request.Params.TextDocument.Text)
+
 	case "textDocument/didChange":
 		var request lsp.TextDocumentDidChangeNotification
 		if err := json.Unmarshal(contents, &request); err != nil {
@@ -90,6 +94,7 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, met
 		for _, change := range request.Params.ContentChanges {
 			state.Update(request.Params.TextDocument.URI, change.Text)
 		}
+
 	case "textDocument/definition":
 		var request lsp.DefinitionRequest
 		if err := json.Unmarshal(contents, &request); err != nil {
@@ -113,14 +118,12 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, met
 		response := state.References(request.ID, request.Params.TextDocument.URI, logger, request.Params.Position)
 
 		writeResponse(writer, response)
-
 	}
 }
 
 func writeResponse(writer io.Writer, msg any) {
 	reply := rpc.EncodeMessage(msg)
 	writer.Write([]byte(reply))
-
 }
 
 func getLogger(filename string) *log.Logger {

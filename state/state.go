@@ -1,10 +1,11 @@
 package state
 
 import (
-	"github.com/dhananjaylatkar/cscope_lsp/cscope_if"
-	"github.com/dhananjaylatkar/cscope_lsp/lsp"
 	"log"
 	"strings"
+
+	"github.com/dhananjaylatkar/cscope_lsp/cscope_if"
+	"github.com/dhananjaylatkar/cscope_lsp/lsp"
 )
 
 type State struct {

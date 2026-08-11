@@ -1,7 +1,6 @@
 package cscope_if
 
 import (
-	"github.com/dhananjaylatkar/cscope_lsp/lsp"
 	"fmt"
 	"log"
 	"os"
@@ -9,6 +8,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/dhananjaylatkar/cscope_lsp/lsp"
 )
 
 const (
