@@ -26,7 +26,7 @@ func main() {
 	scanner.Split(rpc.Split)
 
 	writer := os.Stdout
-	state := state.New()
+	state := new(state.New())
 
 	for scanner.Scan() {
 		msg := scanner.Bytes()
@@ -40,7 +40,7 @@ func main() {
 	}
 }
 
-func handleMessage(logger *log.Logger, writer io.Writer, state state.State, method string, contents []byte) {
+func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, method string, contents []byte) {
 	logger.Printf("Received msg with method: %s", method)
 
 	switch method {
