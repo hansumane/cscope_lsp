@@ -8,8 +8,3 @@ type ReferencesRequest struct {
 type ReferencesParams struct {
 	TextDocumentPositionParams
 }
-
-type ReferencesResponse struct {
-	Response
-	Result []Location `json:"result"`
-}

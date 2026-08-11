@@ -34,6 +34,14 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 ```
 
+## Helix config
+
+```toml
+[language-server.cscope_lsp]
+command = "cscope_lsp"
+config = { replaceMethods = true }
+```
+
 ## Requirements
 
 1. `cscope` is installed.
@@ -41,8 +49,24 @@ vim.api.nvim_create_autocmd("FileType", {
 
 ## Supported Capabilities
 
-1. textDocument/definition
-2. textDocument/references
+1. `textDocument/definition` or `textDocument/typeDefinition`
+2. `textDocument/references` or `textDocument/typeDefinition`
+
+If the server is configured with
+```json
+{ "replaceMethods": true }
+```
+It will replace the following methods:
+
+1. `textDocument/definition` with `textDocument/typeDefinition`
+2. `textDocument/references` with `textDocument/implementation`
+
+There will be conflict with clangd anyway, because clangd implements
+all four methods, however, since cscope is mostly used for functions,
+methods, etc. `typeDefinition` won't break much.
+
+however, `implementation` for cscope references may not be the best,
+but it is what it is...
 
 ## Thanks
 

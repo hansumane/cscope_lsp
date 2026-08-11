@@ -8,8 +8,3 @@ type DefinitionRequest struct {
 type DefinitionParams struct {
 	TextDocumentPositionParams
 }
-
-type DefinitionResponse struct {
-	Response
-	Result []Location `json:"result"`
-}

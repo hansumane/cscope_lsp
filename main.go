@@ -55,6 +55,11 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, met
 			request.Params.ClientInfo.Name,
 			request.Params.ClientInfo.Version)
 
+		if request.Params.Options != nil {
+			state.ReplaceMethods = request.Params.Options.ReplaceMethods
+			logger.Printf("Client Options: %v, replaceMethods: %v", request.Params.Options, state.ReplaceMethods)
+		}
+
 		// sent initialize response
 		msg := lsp.NewInitializeResponse(request.ID)
 		writeResponse(writer, msg)
@@ -103,9 +108,29 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, met
 		}
 
 		// Create a response
-		response := state.Definition(request.ID, request.Params.TextDocument.URI, logger, request.Params.Position)
+		if state.ReplaceMethods {
+			response := state.EmptyLocation(request.ID)
+			writeResponse(writer, response)
+		} else {
+			response := state.Definition(request.ID, request.Params.TextDocument.URI, logger, request.Params.Position)
+			writeResponse(writer, response)
+		}
 
-		writeResponse(writer, response)
+	case "textDocument/typeDefinition":
+		var request lsp.TypeDefinitionRequest
+		if err := json.Unmarshal(contents, &request); err != nil {
+			logger.Printf("textDocument/typeDefinition: %s", err)
+			return
+		}
+
+		// Create a response
+		if state.ReplaceMethods {
+			response := state.TypeDefinition(request.ID, request.Params.TextDocument.URI, logger, request.Params.Position)
+			writeResponse(writer, response)
+		} else {
+			response := state.EmptyLocation(request.ID)
+			writeResponse(writer, response)
+		}
 
 	case "textDocument/references":
 		var request lsp.ReferencesRequest
@@ -115,9 +140,29 @@ func handleMessage(logger *log.Logger, writer io.Writer, state *state.State, met
 		}
 
 		// Create a response
-		response := state.References(request.ID, request.Params.TextDocument.URI, logger, request.Params.Position)
+		if state.ReplaceMethods {
+			response := state.EmptyLocation(request.ID)
+			writeResponse(writer, response)
+		} else {
+			response := state.References(request.ID, request.Params.TextDocument.URI, logger, request.Params.Position)
+			writeResponse(writer, response)
+		}
 
-		writeResponse(writer, response)
+	case "textDocument/implementation":
+		var request lsp.ImplementationRequest
+		if err := json.Unmarshal(contents, &request); err != nil {
+			logger.Printf("textDocument/implementation: %s", err)
+			return
+		}
+
+		// Create a response
+		if state.ReplaceMethods {
+			response := state.Implementation(request.ID, request.Params.TextDocument.URI, logger, request.Params.Position)
+			writeResponse(writer, response)
+		} else {
+			response := state.EmptyLocation(request.ID)
+			writeResponse(writer, response)
+		}
 	}
 }
 

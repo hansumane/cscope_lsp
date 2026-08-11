@@ -6,12 +6,17 @@ type InitializeRequest struct {
 }
 
 type InitializeRequestParams struct {
-	ClientInfo *ClientInfo `json:"clientInfo"`
+	ClientInfo *ClientInfo        `json:"clientInfo"`
+	Options    *InitializeOptions `json:"initializationOptions"`
 }
 
 type ClientInfo struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
+}
+
+type InitializeOptions struct {
+	ReplaceMethods bool `json:"replaceMethods"`
 }
 
 type InitializeResponse struct {
@@ -25,9 +30,11 @@ type InitializeResult struct {
 }
 
 type ServerCapabilities struct {
-	TextDocumentSync   int  `json:"textDocumentSync"`
-	DefinitionProvider bool `json:"definitionProvider"`
-	ReferencesProvider bool `json:"referencesProvider"`
+	TextDocumentSync       int  `json:"textDocumentSync"`
+	DefinitionProvider     bool `json:"definitionProvider"`
+	TypeDefinitionProvider bool `json:"typeDefinitionProvider"`
+	ReferencesProvider     bool `json:"referencesProvider"`
+	ImplementationProvider bool `json:"implementationProvider"`
 }
 
 type ServerInfo struct {
@@ -43,9 +50,11 @@ func NewInitializeResponse(id int) InitializeResponse {
 		},
 		Result: InitializeResult{
 			Capabilities: ServerCapabilities{
-				TextDocumentSync:   1,
-				DefinitionProvider: true,
-				ReferencesProvider: true,
+				TextDocumentSync:       1,
+				DefinitionProvider:     true,
+				TypeDefinitionProvider: true,
+				ReferencesProvider:     true,
+				ImplementationProvider: true,
 			},
 			ServerInfo: ServerInfo{
 				Name:    "cscope_lsp",

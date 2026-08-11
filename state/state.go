@@ -11,6 +11,11 @@ import (
 type State struct {
 	// Map of file names to contents
 	Documents map[string]string
+
+	// Whether to replace:
+	// - textDocument/definition with textDocument/typeDefinition
+	// - textDocument/references with textDocument/implementation
+	ReplaceMethods bool
 }
 
 func New() State {
@@ -48,7 +53,17 @@ func extractWord(line string, pos int) string {
 	return line[start:end]
 }
 
-func (s *State) Definition(id int, uri string, logger *log.Logger, position lsp.Position) lsp.DefinitionResponse {
+func (s *State) EmptyLocation(id int) lsp.LocationResponse {
+	return lsp.LocationResponse{
+		Response: lsp.Response{
+			RPC: "2.0",
+			ID:  &id,
+		},
+		Result: []lsp.Location{},
+	}
+}
+
+func (s *State) Definition(id int, uri string, logger *log.Logger, position lsp.Position) lsp.LocationResponse {
 	logger.Printf("uri: %s", uri)
 	logger.Printf("position.Line: %d", position.Line)
 	logger.Printf("position.Char: %d", position.Character)
@@ -60,7 +75,7 @@ func (s *State) Definition(id int, uri string, logger *log.Logger, position lsp.
 
 	defs := cscope_if.GetDefinition(logger, uri, word)
 
-	return lsp.DefinitionResponse{
+	return lsp.LocationResponse{
 		Response: lsp.Response{
 			RPC: "2.0",
 			ID:  &id,
@@ -69,7 +84,11 @@ func (s *State) Definition(id int, uri string, logger *log.Logger, position lsp.
 	}
 }
 
-func (s *State) References(id int, uri string, logger *log.Logger, position lsp.Position) lsp.ReferencesResponse {
+func (s *State) TypeDefinition(id int, uri string, logger *log.Logger, position lsp.Position) lsp.LocationResponse {
+	return s.Definition(id, uri, logger, position)
+}
+
+func (s *State) References(id int, uri string, logger *log.Logger, position lsp.Position) lsp.LocationResponse {
 	logger.Printf("uri: %s", uri)
 	logger.Printf("position.Line: %d", position.Line)
 	logger.Printf("position.Char: %d", position.Character)
@@ -81,11 +100,15 @@ func (s *State) References(id int, uri string, logger *log.Logger, position lsp.
 
 	defs := cscope_if.GetReferences(logger, uri, word)
 
-	return lsp.ReferencesResponse{
+	return lsp.LocationResponse{
 		Response: lsp.Response{
 			RPC: "2.0",
 			ID:  &id,
 		},
 		Result: defs,
 	}
+}
+
+func (s *State) Implementation(id int, uri string, logger *log.Logger, position lsp.Position) lsp.LocationResponse {
+	return s.References(id, uri, logger, position)
 }

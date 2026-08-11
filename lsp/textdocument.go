@@ -59,3 +59,8 @@ type TextEdit struct {
 	Range   Range  `json:"range"`
 	NewText string `json:"newText"`
 }
+
+type LocationResponse struct {
+	Response
+	Result []Location `json:"result"`
+}
